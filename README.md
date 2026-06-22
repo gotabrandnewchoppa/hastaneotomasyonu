@@ -1,35 +1,35 @@
-# 🏥 Medipanel - Hastane Otomasyon Sistemi
+#  Medipanel - Hastane Otomasyon Sistemi
 
 Medipanel, modern hastane süreçlerini (hasta yönetimi, doktor takip, randevu planlama, tıbbi dosya arşivleme ve istatistik takibi) dijitalleştirmek ve kolaylaştırmak amacıyla geliştirilmiş, şık arayüze sahip ASP.NET Core MVC tabanlı bir hastane yönetim sistemidir.
 
 ---
 
-## ✨ Özellikler
+##  Özellikler
 
-*   **📊 Yönetici Paneli (Dashboard):** 
+*   ** Yönetici Paneli (Dashboard):** 
     *   Toplam hasta, aktif doktor ve bugünkü randevu sayıları.
     *   **Chart.js** entegrasyonu ile son 7 günün randevu grafiği.
     *   En son eklenen/güncellenen randevuların listesi.
-*   **👥 Hasta Yönetimi:**
+*   ** Hasta Yönetimi:**
     *   Hasta kaydı ekleme, güncelleme ve silme.
     *   Hasta listesinde gelişmiş arama ve filtreleme.
     *   Tıbbi dosya yönetimi (pdf yükleme, listeleme, pdf önizleme/indirme).
-*   **👨‍⚕️ Doktor Yönetimi:**
+*   ** Doktor Yönetimi:**
     *   Doktor ekleme, branş, unvan, iletişim ve çalışma durumu yönetimi.
     *   Doktor randevularına hızlı filtreleme.
-*   **📅 Randevu Yönetimi:**
+*   ** Randevu Yönetimi:**
     *   Randevu oluşturma, durum güncelleme (Onaylandı, Beklemede, Tamamlandı, İptal).
     *   Randevuya ait detaylı notlar ekleyebilme.
-*   **🔔 Gelişmiş Bildirim Sistemi:**
+*   ** Gelişmiş Bildirim Sistemi:**
     *   Navbar üzerinde bekleyen randevuların anlık sayısını gösteren bildirim zili ve dropdown menüsü.
     *   İşlemler sonrasında dinamik olarak beliren ve otomatik kaybolan **Toast** uyarı mesajları.
-*   **🔐 Güvenli Giriş Sistemi (Auth):**
+*   ** Güvenli Giriş Sistemi (Auth):**
     *   Session tabanlı kimlik doğrulama.
     *   Yetkisiz erişim denemelerinde otomatik yönlendirme (`SessionCheck` filtresi).
 
 ---
 
-## 🛠️ Teknolojiler & Kütüphaneler
+##  Teknolojiler & Kütüphaneler
 
 *   **Backend:** ASP.NET Core 9.0 / .NET 9.0 (MVC mimarisi)
 *   **Veritabanı:** SQLite & Entity Framework Core (Code-First)
@@ -39,7 +39,7 @@ Medipanel, modern hastane süreçlerini (hasta yönetimi, doktor takip, randevu 
 
 ---
 
-## 🚀 Başlangıç & Kurulum
+##  Başlangıç & Kurulum
 
 Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:
 
@@ -55,7 +55,7 @@ dotnet run
 ```
 
 Uygulama varsayılan olarak şu adreste çalışmaya başlayacaktır:
-🔗 **`http://localhost:5036`** (veya `https://localhost:7072`)
+ **`http://localhost:5036`** (veya `https://localhost:7072`)
 
 ### 3. Yönetici Giriş Bilgileri
 Sisteme giriş yapmak için `appsettings.json` dosyasında tanımlı olan varsayılan kimlik bilgilerini kullanabilirsiniz:
@@ -65,7 +65,7 @@ Sisteme giriş yapmak için `appsettings.json` dosyasında tanımlı olan varsay
 
 ---
 
-## 📁 Proje Klasör Yapısı
+##  Proje Klasör Yapısı
 
 *   `Controllers/` : İş mantığının ve yönlendirmelerin yapıldığı sınıflar (Patients, Doctors, Appointments, Auth vb.).
 *   `Models/` : Veritabanı tablolarını ve ViewModellerini temsil eden sınıflar.

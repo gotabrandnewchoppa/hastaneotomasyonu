@@ -1,16 +1,25 @@
+@using HospitalManagementSystem.Web.Models
 @{
     ViewData["Title"] = "Ana Sayfa";
+    int totalPatients       = ViewBag.TotalPatients       ?? 0;
+    int totalDoctors        = ViewBag.TotalDoctors        ?? 0;
+    int todayAppointments   = ViewBag.TodayAppointments   ?? 0;
+    int pendingAppointments = ViewBag.PendingAppointments ?? 0;
+    string chartLabels      = ViewBag.ChartLabels         ?? "[]";
+    string chartData        = ViewBag.ChartData           ?? "[]";
+    var recentAppointments  = ViewBag.RecentAppointments  as List<Appointment> ?? new List<Appointment>();
 }
 
+<!-- İstatistik Kartları -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- İstatistik Kartları -->
+
     <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 flex items-center justify-center text-xl">
             <i class="fa-solid fa-users"></i>
         </div>
         <div>
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Toplam Hasta</p>
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">1,248</h3>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-patients">@totalPatients</h3>
         </div>
     </div>
 
@@ -20,7 +29,7 @@
         </div>
         <div>
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Aktif Doktor</p>
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">45</h3>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-doctors">@totalDoctors</h3>
         </div>
     </div>
 
@@ -30,46 +39,155 @@
         </div>
         <div>
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Bugünkü Randevular</p>
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">124</h3>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-today">@todayAppointments</h3>
         </div>
     </div>
 
     <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500 dark:text-rose-400 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-bed-pulse"></i>
+            <i class="fa-solid fa-clock-rotate-left"></i>
         </div>
         <div>
-            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Yatan Hasta</p>
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">32</h3>
+            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Bekleyen Randevu</p>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white" id="stat-pending">@pendingAppointments</h3>
         </div>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6 line-chart-container">
-        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Haftalık Hasta İstatistiği</h2>
-        <div class="h-64 bg-slate-50 dark:bg-slate-900 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500">
-            [Grafik Alanı - Chart.js eklenebilir]
+
+    <!-- Haftalık Randevu Grafiği -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold text-slate-800 dark:text-white">Haftalık Randevu İstatistiği</h2>
+            <span class="text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full">Son 7 Gün</span>
+        </div>
+        <div class="h-64 relative">
+            <canvas id="weeklyChart"></canvas>
         </div>
     </div>
 
+    <!-- Son Randevular -->
     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
-        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Yaklaşan Randevular</h2>
-        <div class="space-y-4">
-            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">AH</div>
-                    <div>
-                        <p class="font-medium text-slate-800 dark:text-slate-200">Ahmet Yılmaz</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Genel Cerrahi - Dr. Mehmet Öz</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold text-slate-800 dark:text-white">14:30</p>
-                    <p class="text-xs text-blue-500 dark:text-blue-400 font-medium">Bugün</p>
-                </div>
-            </div>
-            <!-- More dummy items can be added here -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-bold text-slate-800 dark:text-white">Son Randevular</h2>
+            <a href="/Randevular" class="text-xs font-medium text-primary hover:underline">Tümünü Gör →</a>
         </div>
+
+        @if (!recentAppointments.Any())
+        {
+            <div class="flex flex-col items-center justify-center h-48 text-slate-400 dark:text-slate-500 gap-2">
+                <i class="fa-regular fa-calendar-xmark text-3xl"></i>
+                <p class="text-sm">Henüz randevu bulunmuyor.</p>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-3">
+                @foreach (var appt in recentAppointments)
+                {
+                    var initials = string.Join("", (appt.Patient?.FullName ?? "?").Split(' ').Take(2).Select(w => w[0]));
+                    var statusClass = appt.Status switch {
+                        "Onaylandı"  => "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
+                        "Bekliyor"   => "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
+                        "İptal"      => "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400",
+                        "Tamamlandı" => "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400",
+                        _            => "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                    };
+
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700 hover:border-primary/30 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                @initials
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-800 dark:text-slate-200 text-sm">@appt.Patient?.FullName</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">@appt.Doctor?.Specialization · @appt.Doctor?.FullName</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0 ml-2">
+                            <p class="font-bold text-slate-800 dark:text-white text-sm">@appt.AppointmentDate.ToString("HH:mm")</p>
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-full @statusClass">@appt.Status</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+    const labelColor = isDark ? '#94a3b8' : '#64748b';
+
+    const labels = @Html.Raw(chartLabels);
+    const data   = @Html.Raw(chartData);
+
+    const ctx = document.getElementById('weeklyChart');
+    if (!ctx) return;
+
+    const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 256);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.00)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Randevu Sayısı',
+                data,
+                fill: true,
+                backgroundColor: gradient,
+                borderColor: '#3b82f6',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                tension: 0.4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? '#1e293b' : '#fff',
+                    borderColor: isDark ? '#334155' : '#e2e8f0',
+                    borderWidth: 1,
+                    titleColor: isDark ? '#f1f5f9' : '#0f172a',
+                    bodyColor: isDark ? '#94a3b8' : '#64748b',
+                    padding: 10,
+                    callbacks: {
+                        label: ctx => ` ${ctx.parsed.y} randevu`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { color: labelColor, font: { size: 12 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: gridColor },
+                    ticks: {
+                        color: labelColor,
+                        font: { size: 12 },
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+}

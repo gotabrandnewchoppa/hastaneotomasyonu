@@ -1,3 +1,6 @@
+@using HospitalManagementSystem.Web.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext LayoutDb
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -58,6 +61,9 @@
     <!-- Dinamik Aktif Menü Kontrolü İçin Razor Kodu -->
     @{
         var currentController = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "Home";
+        var sessionUserName = Context.Session.GetString("UserName") ?? "Admin";
+        var sessionUserEmail = Context.Session.GetString("UserEmail") ?? "";
+        var avatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(sessionUserName)}&background=3b82f6&color=fff&rounded=true&bold=true";
     }
 
     <!-- SİDEBAR BÖLÜMÜ -->
@@ -85,34 +91,37 @@
                 </li>
                 
                 <li>
-                    <a href="/Hastalar" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Hastalar" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
-                        <i class="fa-solid fa-bed-pulse w-5 group-hover:scale-110 transition-transform @(currentController == "Hastalar" ? "text-white" : "")"></i>
+                    <a href="/Hastalar" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Patients" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
+                        <i class="fa-solid fa-bed-pulse w-5 group-hover:scale-110 transition-transform @(currentController == "Patients" ? "text-white" : "")"></i>
                         <span>Hastalar</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/Doktorlar" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Doktorlar" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
-                        <i class="fa-solid fa-user-doctor w-5 group-hover:scale-110 transition-transform @(currentController == "Doktorlar" ? "text-white" : "")"></i>
+                    <a href="/Doktorlar" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Doctors" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
+                        <i class="fa-solid fa-user-doctor w-5 group-hover:scale-110 transition-transform @(currentController == "Doctors" ? "text-white" : "")"></i>
                         <span>Doktorlar</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/Randevular" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Randevular" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
-                        <i class="fa-regular fa-calendar-check w-5 group-hover:scale-110 transition-transform @(currentController == "Randevular" ? "text-white" : "")"></i>
+                    <a href="/Randevular" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 group @(currentController == "Appointments" ? "bg-primary text-white shadow-md shadow-primary/30 dark:shadow-primary/20" : "text-textMuted dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white")">
+                        <i class="fa-regular fa-calendar-check w-5 group-hover:scale-110 transition-transform @(currentController == "Appointments" ? "text-white" : "")"></i>
                         <span>Randevular</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        <!-- Çıkış Yap Butonu -->
+        <!-- Çıkış Yap Butonu (POST ile CSRF korumalı) -->
         <div class="p-4 border-t border-slate-100 dark:border-slate-700 mt-auto">
-            <a href="/Auth/Logout" class="flex items-center gap-3 px-4 py-3 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-sm rounded-xl font-medium transition-all duration-200 group">
-                <i class="fa-solid fa-arrow-right-from-bracket w-5 group-hover:-translate-x-1 transition-transform"></i>
-                <span>Çıkış</span>
-            </a>
+            <form asp-controller="Auth" asp-action="Logout" method="post" id="logoutForm">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:shadow-sm rounded-xl font-medium transition-all duration-200 group">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 group-hover:translate-x-1 transition-transform"></i>
+                    <span>Çıkış Yap</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -137,15 +146,80 @@
                     <i id="theme-toggle-light-icon" class="hidden fa-solid fa-sun text-lg text-amber-400"></i>
                 </button>
 
-                <button class="relative p-2 text-slate-400 hover:text-primary dark:hover:text-white hover:bg-primary/5 dark:hover:bg-slate-700 rounded-full transition-all">
-                    <i class="fa-regular fa-bell text-xl"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
-                </button>
+                @{
+                    var notifications = await LayoutDb.Appointments
+                        .Include(a => a.Patient)
+                        .Include(a => a.Doctor)
+                        .OrderByDescending(a => a.AppointmentDate)
+                        .Take(5)
+                        .ToListAsync();
+                    var pendingCount = await LayoutDb.Appointments.CountAsync(a => a.Status == "Bekliyor");
+                }
+                <!-- Bildirim Butonu ve Dropdown -->
+                <div class="relative" id="notif-wrapper">
+                    <button id="notif-btn" type="button" class="relative p-2 text-slate-400 hover:text-primary dark:hover:text-white hover:bg-primary/5 dark:hover:bg-slate-700 rounded-full transition-all">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        @if (pendingCount > 0)
+                        {
+                            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
+                        }
+                    </button>
+
+                    <!-- Dropdown Paneli -->
+                    <div id="notif-panel" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-slate-700">
+                            <span class="font-semibold text-slate-800 dark:text-white text-sm">Bildirimler</span>
+                            @if (pendingCount > 0)
+                            {
+                                <span class="text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">@pendingCount bekliyor</span>
+                            }
+                            else
+                            {
+                                <span class="text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full">Hepsi tamam</span>
+                            }
+                        </div>
+                        <ul class="divide-y divide-slate-100 dark:divide-slate-700 max-h-72 overflow-y-auto">
+                            @if (!notifications.Any())
+                            {
+                                <li class="px-5 py-8 text-center text-slate-400 dark:text-slate-500 text-sm">
+                                    <i class="fa-regular fa-bell-slash text-2xl mb-2 block"></i>
+                                    Bildirim yok
+                                </li>
+                            }
+                            else
+                            {
+                                @foreach (var n in notifications)
+                                {
+                                    var ic = n.Status switch {
+                                        "Onaylandı"  => "fa-circle-check text-emerald-500",
+                                        "Bekliyor"   => "fa-clock text-amber-500",
+                                        "İptal"      => "fa-circle-xmark text-red-500",
+                                        "Tamamlandı" => "fa-circle-check text-blue-500",
+                                        _            => "fa-circle-info text-slate-400"
+                                    };
+                                    <li class="px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
+                                        <div class="flex items-start gap-3">
+                                            <i class="fa-solid @ic mt-0.5 flex-shrink-0"></i>
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">@n.Patient?.FullName</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">@n.Doctor?.Specialization · @n.AppointmentDate.ToString("dd MMM HH:mm")</p>
+                                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">@n.Status</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                        <div class="px-5 py-3 border-t border-slate-100 dark:border-slate-700">
+                            <a href="/Randevular" class="text-xs font-medium text-primary hover:underline">Tüm randevuları gör →</a>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-3 pl-5 border-l border-slate-200 dark:border-slate-700 cursor-pointer hover:opacity-80 transition-opacity">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff&rounded=true&bold=true" alt="Admin" class="w-10 h-10 rounded-full shadow-sm" />
+                    <img src="@avatarUrl" alt="@sessionUserName" class="w-10 h-10 rounded-full shadow-sm" />
                     <div class="hidden sm:flex flex-col">
-                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Admin User</span>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">@sessionUserName</span>
                         <span class="text-xs text-slate-500 dark:text-slate-400">Sistem Yöneticisi</span>
                     </div>
                 </div>
@@ -154,6 +228,25 @@
 
         <!-- DİNAMİK İÇERİK ALANI (RenderBody) -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto w-full p-4 md:p-6 lg:p-8 bg-background dark:bg-slate-900 transition-colors duration-300">
+
+            <!-- Toast Bildirimler (TempData) -->
+            @if (TempData["Success"] != null)
+            {
+                <div id="toast-success" class="flex items-center gap-3 mb-4 px-4 py-3 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 rounded-xl shadow-sm">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    <span class="text-sm font-medium">@TempData["Success"]</span>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-emerald-400 hover:text-emerald-600 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div id="toast-error" class="flex items-center gap-3 mb-4 px-4 py-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 rounded-xl shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                    <span class="text-sm font-medium">@TempData["Error"]</span>
+                    <button onclick="this.parentElement.remove()" class="ml-auto text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            }
+
             <div class="bg-surface dark:bg-slate-800 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none border border-slate-100 dark:border-slate-700 p-6 md:p-8 min-h-[calc(100vh-10rem)] w-full block transition-colors duration-300">
                 @RenderBody()
             </div>
@@ -203,7 +296,35 @@
             }
         });
     </script>
-    
+
+    <!-- Bildirim Dropdown Scripti -->
+    <script>
+        (function () {
+            var btn   = document.getElementById('notif-btn');
+            var panel = document.getElementById('notif-panel');
+            if (!btn || !panel) return;
+
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                panel.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!document.getElementById('notif-wrapper').contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            });
+        })();
+
+        // Toast bildirimleri 4 saniye sonra otomatik kapat
+        setTimeout(function () {
+            var s = document.getElementById('toast-success');
+            var er = document.getElementById('toast-error');
+            if (s)  s.style.transition  = 'opacity 0.4s'; s  && (s.style.opacity  = '0'); setTimeout(function(){ s  && s.remove(); }, 400);
+            if (er) er.style.transition = 'opacity 0.4s'; er && (er.style.opacity = '0'); setTimeout(function(){ er && er.remove(); }, 400);
+        }, 4000);
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

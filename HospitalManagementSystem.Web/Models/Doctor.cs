@@ -22,6 +22,8 @@ namespace HospitalManagementSystem.Web.Models
 
         public string? Email { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
         // İlişkiler
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

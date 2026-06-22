@@ -29,6 +29,8 @@ namespace HospitalManagementSystem.Web.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        public bool IsDeleted { get; set; } = false;
+
         // İlişkiler
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HospitalManagementSystem.Web.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : Controller
     {
-        // Demo admin bilgileri (gerçek projede Identity veya DB kullanılır)
-        private const string AdminEmail = "admin@medipanel.com";
-        private const string AdminPassword = "123456";
-        private const string AdminName = "Yönetici";
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         // GET: Auth/Login
         [HttpGet]
@@ -22,13 +26,16 @@ namespace HospitalManagementSystem.Web.Controllers
 
         // POST: Auth/Login
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Login(string email, string password)
         {
-            if (email == AdminEmail && password == AdminPassword)
+            var adminEmail = _configuration["AdminCredentials:Email"];
+            var adminPassword = _configuration["AdminCredentials:Password"];
+            var adminName = _configuration["AdminCredentials:Name"] ?? "Yönetici";
+
+            if (email == adminEmail && password == adminPassword)
             {
                 HttpContext.Session.SetString("UserEmail", email);
-                HttpContext.Session.SetString("UserName", AdminName);
+                HttpContext.Session.SetString("UserName", adminName);
                 return RedirectToAction("Index", "Home");
             }
 
@@ -36,10 +43,19 @@ namespace HospitalManagementSystem.Web.Controllers
             return View();
         }
 
-        // POST: Auth/Logout
+        // GET: Auth/Logout — Tarayıcı adres çubuğundan direkt girilirse Login'e yönlendir
+        [HttpGet]
+        [ActionName("Logout")]
+        public IActionResult LogoutGet()
+        {
+            return RedirectToAction("Login");
+        }
+
+        // POST: Auth/Logout — Sidebar formu üzerinden güvenli çıkış
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Logout()
+        [ActionName("Logout")]
+        public IActionResult LogoutPost()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");

@@ -90,7 +90,8 @@ namespace HospitalManagementSystem.Web.Controllers
             var patient = await _context.Patients.FindAsync(id);
             if (patient != null)
             {
-                _context.Patients.Remove(patient);
+                patient.IsDeleted = true;
+                _context.Update(patient);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
@@ -227,6 +228,14 @@ namespace HospitalManagementSystem.Web.Controllers
 
             var pdfBytes = PatientPdfService.Generate(patient, appointments, labs);
             return File(pdfBytes, "application/pdf", $"hasta_{patient.Id}_{DateTime.Now:yyyyMMdd}.pdf");
+        }
+
+        // GET: Patients/ExportListPdf
+        public async Task<IActionResult> ExportListPdf()
+        {
+            var patients = await _context.Patients.OrderByDescending(p => p.CreatedAt).ToListAsync();
+            var pdfBytes = ListPdfService.ExportPatients(patients);
+            return File(pdfBytes, "application/pdf", $"Hastalar_{DateTime.Now:yyyyMMdd}.pdf");
         }
     }
 }

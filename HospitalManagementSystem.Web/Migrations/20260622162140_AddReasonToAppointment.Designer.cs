@@ -3,6 +3,7 @@ using System;
 using HospitalManagementSystem.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HospitalManagementSystem.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260622162140_AddReasonToAppointment")]
+    partial class AddReasonToAppointment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
@@ -27,9 +30,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("DoctorId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Notes")
@@ -60,7 +60,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             Id = 1,
                             AppointmentDate = new DateTime(2026, 3, 11, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = 1,
-                            IsDeleted = false,
                             PatientId = 1,
                             Reason = "Kontrol / Muayene",
                             Status = "Onaylandı"
@@ -70,7 +69,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             Id = 2,
                             AppointmentDate = new DateTime(2026, 3, 11, 14, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = 2,
-                            IsDeleted = false,
                             PatientId = 2,
                             Reason = "Ağrı Şikâyeti",
                             Status = "Onaylandı"
@@ -80,7 +78,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             Id = 3,
                             AppointmentDate = new DateTime(2026, 3, 12, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorId = 1,
-                            IsDeleted = false,
                             PatientId = 3,
                             Reason = "Tahlil / Tetkik",
                             Status = "İptal"
@@ -100,9 +97,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -125,7 +119,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         {
                             Id = 1,
                             FullName = "Dr. Mehmet Öz",
-                            IsDeleted = false,
                             Phone = "05551112233",
                             RoomNumber = "K-02",
                             Specialization = "Kardiyoloji"
@@ -134,7 +127,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         {
                             Id = 2,
                             FullName = "Op. Dr. Ayşe Yılmaz",
-                            IsDeleted = false,
                             Phone = "05552223344",
                             RoomNumber = "G-05",
                             Specialization = "Genel Cerrahi"
@@ -143,7 +135,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         {
                             Id = 3,
                             FullName = "Uzm. Dr. Kemal Sunal",
-                            IsDeleted = false,
                             Phone = "05553334455",
                             RoomNumber = "D-10",
                             Specialization = "Dahiliye"
@@ -152,7 +143,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         {
                             Id = 4,
                             FullName = "Op. Dr. Cüneyt Arkın",
-                            IsDeleted = false,
                             Phone = "05554445566",
                             RoomNumber = "O-01",
                             Specialization = "Ortopedi"
@@ -161,7 +151,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         {
                             Id = 5,
                             FullName = "Dr. Fatma Girik",
-                            IsDeleted = false,
                             Phone = "05555556677",
                             RoomNumber = "C-08",
                             Specialization = "Çocuk Hastalıkları"
@@ -237,9 +226,6 @@ namespace HospitalManagementSystem.Web.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -257,7 +243,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1980, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Ahmet Yılmaz",
                             Gender = "Erkek",
-                            IsDeleted = false,
                             Phone = "05321112233"
                         },
                         new
@@ -268,7 +253,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1992, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Fatma Şahin",
                             Gender = "Kadın",
-                            IsDeleted = false,
                             Phone = "05322223344"
                         },
                         new
@@ -279,7 +263,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1975, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Ali Koç",
                             Gender = "Erkek",
-                            IsDeleted = false,
                             Phone = "05323334455"
                         },
                         new
@@ -290,7 +273,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1988, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Ayşe Demir",
                             Gender = "Kadın",
-                            IsDeleted = false,
                             Phone = "05324445566"
                         },
                         new
@@ -301,7 +283,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1960, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Mustafa Çelik",
                             Gender = "Erkek",
-                            IsDeleted = false,
                             Phone = "05325556677"
                         },
                         new
@@ -312,7 +293,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(2000, 4, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Zeynep Kaya",
                             Gender = "Kadın",
-                            IsDeleted = false,
                             Phone = "05326667788"
                         },
                         new
@@ -323,7 +303,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1995, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Mehmet Can",
                             Gender = "Erkek",
-                            IsDeleted = false,
                             Phone = "05327778899"
                         },
                         new
@@ -334,7 +313,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1985, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Elif Yıldırım",
                             Gender = "Kadın",
-                            IsDeleted = false,
                             Phone = "05328889900"
                         },
                         new
@@ -345,7 +323,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1970, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Hasan Aydın",
                             Gender = "Erkek",
-                            IsDeleted = false,
                             Phone = "05329990011"
                         },
                         new
@@ -356,7 +333,6 @@ namespace HospitalManagementSystem.Web.Migrations
                             DateOfBirth = new DateTime(1990, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Sibel Ak",
                             Gender = "Kadın",
-                            IsDeleted = false,
                             Phone = "05320001122"
                         });
                 });

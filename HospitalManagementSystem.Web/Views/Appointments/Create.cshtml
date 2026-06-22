@@ -2,71 +2,131 @@
 
 @{
     ViewData["Title"] = "Yeni Randevu Ekle";
+    var minDate = "2000-01-01T00:00";
+    var maxDate = "2099-12-31T23:59";
 }
 
 <div class="max-w-2xl mx-auto">
     <div class="flex items-center gap-4 mb-6">
-        <a asp-action="Index" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+        <a asp-action="Index" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
-        <h1 class="text-2xl font-bold text-slate-800">Yeni Randevu Ekle</h1>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Yeni Randevu Ekle</h1>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
-        <form asp-action="Create" method="post" class="space-y-5">
-            <div asp-validation-summary="ModelOnly" class="p-4 bg-red-50 text-red-700 rounded-lg text-sm"></div>
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-8">
+        <form asp-action="Create" method="post" class="space-y-5" id="createForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="p-4 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-sm border border-red-100 dark:border-red-800 hidden" id="validationSummary"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label asp-for="PatientId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <i class="fa-regular fa-user mr-1 text-slate-400"></i>Hasta *
+                    </label>
+                    <select asp-for="PatientId" asp-items="ViewBag.Patients"
+                            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200">
+                        <option value="">-- Hasta Seçin --</option>
+                    </select>
+                    <span asp-validation-for="PatientId" class="text-red-500 text-xs mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label asp-for="DoctorId" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-user-doctor mr-1 text-slate-400"></i>Doktor *
+                    </label>
+                    <select asp-for="DoctorId" asp-items="ViewBag.Doctors"
+                            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200">
+                        <option value="">-- Doktor Seçin --</option>
+                    </select>
+                    <span asp-validation-for="DoctorId" class="text-red-500 text-xs mt-1 block"></span>
+                </div>
+            </div>
 
             <div>
-                <label asp-for="PatientId" class="block text-sm font-medium text-slate-700 mb-1.5">Hasta *</label>
-                <select asp-for="PatientId" asp-items="ViewBag.Patients"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700">
-                    <option value="">-- Hasta Seçin --</option>
+                <label asp-for="Reason" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fa-solid fa-stethoscope mr-1 text-slate-400"></i>Randevu Sebebi *
+                </label>
+                <select asp-for="Reason" asp-items="ViewBag.Reasons"
+                        class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200">
+                    <option value="">-- Sebep Seçin --</option>
                 </select>
-                <span asp-validation-for="PatientId" class="text-red-500 text-xs mt-1 block"></span>
+                <span asp-validation-for="Reason" class="text-red-500 text-xs mt-1 block"></span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label asp-for="AppointmentDate" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <i class="fa-regular fa-calendar mr-1 text-slate-400"></i>Randevu Tarihi &amp; Saati *
+                    </label>
+                    <input asp-for="AppointmentDate" type="datetime-local" id="AppointmentDate"
+                           min="@minDate" max="@maxDate"
+                           class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200 dark:[color-scheme:dark]" />
+                    <span asp-validation-for="AppointmentDate" class="text-red-500 text-xs mt-1 block"></span>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Yıl 2000–2099 arasında olmalıdır.</p>
+                </div>
+
+                <div>
+                    <label asp-for="Status" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-circle-dot mr-1 text-slate-400"></i>Durum *
+                    </label>
+                    <select asp-for="Status"
+                            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200">
+                        <option value="Bekliyor">Bekliyor</option>
+                        <option value="Onaylandı">Onaylandı</option>
+                        <option value="İptal">İptal</option>
+                    </select>
+                </div>
             </div>
 
             <div>
-                <label asp-for="DoctorId" class="block text-sm font-medium text-slate-700 mb-1.5">Doktor *</label>
-                <select asp-for="DoctorId" asp-items="ViewBag.Doctors"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700">
-                    <option value="">-- Doktor Seçin --</option>
-                </select>
-                <span asp-validation-for="DoctorId" class="text-red-500 text-xs mt-1 block"></span>
+                <label asp-for="Notes" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fa-regular fa-note-sticky mr-1 text-slate-400"></i>Ek Notlar
+                </label>
+                <textarea asp-for="Notes" rows="3" placeholder="Randevu ile ilgili ek notlar..."
+                          class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 dark:text-slate-200 resize-none placeholder-slate-400 dark:placeholder-slate-500"></textarea>
             </div>
 
-            <div>
-                <label asp-for="AppointmentDate" class="block text-sm font-medium text-slate-700 mb-1.5">Randevu Tarihi & Saati *</label>
-                <input asp-for="AppointmentDate" type="datetime-local"
-                       class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700" />
-                <span asp-validation-for="AppointmentDate" class="text-red-500 text-xs mt-1 block"></span>
-            </div>
-
-            <div>
-                <label asp-for="Status" class="block text-sm font-medium text-slate-700 mb-1.5">Durum *</label>
-                <select asp-for="Status"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700">
-                    <option value="Onaylandı">Onaylandı</option>
-                    <option value="Bekliyor">Bekliyor</option>
-                    <option value="Tamamlandı">Tamamlandı</option>
-                    <option value="İptal">İptal</option>
-                </select>
-            </div>
-
-            <div>
-                <label asp-for="Notes" class="block text-sm font-medium text-slate-700 mb-1.5">Notlar</label>
-                <textarea asp-for="Notes" rows="3" placeholder="Randevu ile ilgili notlar..."
-                          class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700 resize-none"></textarea>
-            </div>
-
-            <div class="flex gap-3 pt-2">
+            <div class="flex gap-3 pt-2 border-t border-slate-100 dark:border-slate-700">
                 <button type="submit"
                         class="bg-primary hover:bg-primaryHover text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-floppy-disk"></i> Kaydet
+                    <i class="fa-solid fa-calendar-plus"></i> Randevu Oluştur
                 </button>
-                <a asp-action="Index" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-2.5 rounded-lg transition-colors">
-                    İptal
+                <a asp-action="Index" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium px-6 py-2.5 rounded-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-xmark"></i> İptal
                 </a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    // Tarih alanı yıl sınırı kontrolü
+    const dateInput = document.getElementById('AppointmentDate');
+    if (dateInput) {
+        dateInput.addEventListener('change', function () {
+            const val = this.value;
+            if (!val) return;
+            const year = new Date(val).getFullYear();
+            if (year < 2000 || year > 2099) {
+                this.setCustomValidity('Yıl 2000 ile 2099 arasında olmalıdır.');
+                this.reportValidity();
+                this.value = '';
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Klavye ile yıl yazımını da engelle (input event)
+        dateInput.addEventListener('input', function () {
+            const val = this.value;
+            if (!val) return;
+            const year = parseInt(val.substring(0, 4));
+            if (!isNaN(year) && year > 2099) {
+                this.value = '2099' + val.substring(4);
+            }
+        });
+    }
+</script>
+}

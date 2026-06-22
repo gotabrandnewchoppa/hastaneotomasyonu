@@ -18,6 +18,11 @@ namespace HospitalManagementSystem.Web.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Global Query Filters (Soft Delete)
+            modelBuilder.Entity<Patient>().HasQueryFilter(p => !p.IsDeleted);
+            modelBuilder.Entity<Doctor>().HasQueryFilter(d => !d.IsDeleted);
+            modelBuilder.Entity<Appointment>().HasQueryFilter(a => !a.IsDeleted);
+
             // İlişkiler
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
@@ -58,9 +63,9 @@ namespace HospitalManagementSystem.Web.Data
             );
 
             modelBuilder.Entity<Appointment>().HasData(
-                new Appointment { Id = 1, PatientId = 1, DoctorId = 1, AppointmentDate = new DateTime(2026, 3, 11, 9, 0, 0), Status = "Onaylandı" },
-                new Appointment { Id = 2, PatientId = 2, DoctorId = 2, AppointmentDate = new DateTime(2026, 3, 11, 14, 0, 0), Status = "Onaylandı" },
-                new Appointment { Id = 3, PatientId = 3, DoctorId = 1, AppointmentDate = new DateTime(2026, 3, 12, 10, 0, 0), Status = "İptal" }
+                new Appointment { Id = 1, PatientId = 1, DoctorId = 1, AppointmentDate = new DateTime(2026, 3, 11, 9, 0, 0), Status = "Onaylandı", Reason = "Kontrol / Muayene" },
+                new Appointment { Id = 2, PatientId = 2, DoctorId = 2, AppointmentDate = new DateTime(2026, 3, 11, 14, 0, 0), Status = "Onaylandı", Reason = "Ağrı Şikâyeti" },
+                new Appointment { Id = 3, PatientId = 3, DoctorId = 1, AppointmentDate = new DateTime(2026, 3, 12, 10, 0, 0), Status = "İptal", Reason = "Tahlil / Tetkik" }
             );
         }
     }

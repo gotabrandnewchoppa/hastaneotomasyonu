@@ -84,10 +84,19 @@ namespace HospitalManagementSystem.Web.Controllers
             var doctor = await _context.Doctors.FindAsync(id);
             if (doctor != null)
             {
-                _context.Doctors.Remove(doctor);
+                doctor.IsDeleted = true;
+                _context.Update(doctor);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Doctors/ExportListPdf
+        public async Task<IActionResult> ExportListPdf()
+        {
+            var doctors = await _context.Doctors.OrderBy(d => d.FullName).ToListAsync();
+            var pdfBytes = HospitalManagementSystem.Web.Services.ListPdfService.ExportDoctors(doctors);
+            return File(pdfBytes, "application/pdf", $"Doktorlar_{DateTime.Now:yyyyMMdd}.pdf");
         }
     }
 }

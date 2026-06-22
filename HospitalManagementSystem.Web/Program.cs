@@ -1,10 +1,14 @@
 using HospitalManagementSystem.Web.Data;
 using Microsoft.EntityFrameworkCore;
+using HospitalManagementSystem.Web.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => 
+{
+    options.Filters.Add<SessionCheckAttribute>();
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -13,9 +17,11 @@ builder.Services.AddDistributedMemoryCache(); // For simple local testing before
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.MaxAge = TimeSpan.FromDays(7);
+    options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 var app = builder.Build();

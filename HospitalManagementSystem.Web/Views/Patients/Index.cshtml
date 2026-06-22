@@ -1,0 +1,65 @@
+@model IEnumerable<HospitalManagementSystem.Web.Models.Patient>
+
+@{
+    ViewData["Title"] = "Hastalar";
+}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Hasta Listesi</h1>
+    <a href="/Patients/Create" class="bg-primary hover:bg-primaryHover text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i>Yeni Hasta Ekle
+    </a>
+</div>
+
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+                    <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">ID</th>
+                    <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Hasta Adı</th>
+                    <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">TC Kimlik No</th>
+                    <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Telefon</th>
+                    <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300 text-right">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                @foreach (var patient in Model)
+                {
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">@patient.Id</td>
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                                    @(patient.FullName.Length > 2 ? patient.FullName.Substring(0, 2).ToUpper() : "P")
+                                </div>
+                                <span class="font-medium text-slate-800 dark:text-slate-200">@patient.FullName</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">@patient.CitizenshipNumber</td>
+                        <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">@patient.Phone</td>
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex gap-2 justify-end">
+                                <a href="/Patients/Edit/@patient.Id" class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Düzenle">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@patient.Id" method="post" class="inline" onsubmit="return confirm('Bu hastayı silmek istediğinize emin misiniz?');">
+                                    <button type="submit" class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Sil">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-500 dark:text-slate-400">Kayıtlı hasta bulunamadı.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

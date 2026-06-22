@@ -1,0 +1,186 @@
+@model IEnumerable<HospitalManagementSystem.Web.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Randevular";
+    var aktif = Model.Where(a => a.Status != "Tamamlandı").OrderByDescending(a => a.AppointmentDate).ToList();
+    var tamamlanan = Model.Where(a => a.Status == "Tamamlandı").OrderByDescending(a => a.AppointmentDate).ToList();
+}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Randevu Listesi</h1>
+    <a asp-action="Create" class="bg-primary hover:bg-primaryHover text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-calendar-plus"></i>Yeni Randevu
+    </a>
+</div>
+
+
+<div class="mb-4 border-b border-slate-200 dark:border-slate-700">
+    <nav class="flex gap-1" id="apptTabs">
+        <button onclick="switchTab('aktif')" id="tab-aktif"
+            class="tab-btn px-5 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 border-primary text-primary bg-white dark:bg-slate-800 transition-colors">
+            <i class="fa-solid fa-calendar-check mr-1.5"></i>Aktif Randevular
+            <span class="ml-1.5 bg-primary text-white text-xs rounded-full px-1.5 py-0.5">@aktif.Count</span>
+        </button>
+        <button onclick="switchTab('tamamlanan')" id="tab-tamamlanan"
+            class="tab-btn px-5 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-white dark:bg-slate-800 transition-colors">
+            <i class="fa-solid fa-circle-check mr-1.5"></i>Tamamlananlar
+            <span class="ml-1.5 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs rounded-full px-1.5 py-0.5">@tamamlanan.Count</span>
+        </button>
+    </nav>
+</div>
+
+
+<div id="panel-aktif">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Tarih &amp; Saat</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Hasta</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Doktor</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Notlar</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Durum</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300 text-right">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    @foreach (var appt in aktif)
+                    {
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="py-4 px-6">
+                                <div class="font-medium text-slate-800 dark:text-slate-200">@appt.AppointmentDate.ToString("dd.MM.yyyy")</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">@appt.AppointmentDate.ToString("HH:mm")</div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                                        @(appt.Patient?.FullName?.Length > 2 ? appt.Patient.FullName.Substring(0, 2).ToUpper() : "?")
+                                    </div>
+                                    <span class="font-medium text-slate-800 dark:text-slate-200">@appt.Patient?.FullName</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-slate-700 dark:text-slate-300">@appt.Doctor?.FullName</td>
+                            <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 max-w-[200px] truncate">@(appt.Notes ?? "-")</td>
+                            <td class="py-4 px-6">
+                                @{
+                                    var badgeClass = appt.Status switch {
+                                        "Onaylandı" => "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800",
+                                        "İptal"     => "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-800",
+                                        _           => "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800"
+                                    };
+                                    var iconClass = appt.Status switch {
+                                        "Onaylandı" => "fa-check",
+                                        "İptal"     => "fa-xmark",
+                                        _           => "fa-clock"
+                                    };
+                                }
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium @badgeClass">
+                                    <i class="fa-solid @iconClass"></i> @appt.Status
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-right">
+                                <div class="flex gap-2 justify-end">
+                                    <a asp-action="Edit" asp-route-id="@appt.Id"
+                                       class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Düzenle">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+                                    <form asp-action="Complete" asp-route-id="@appt.Id" method="post" class="inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit"
+                                                class="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                                title="Tamamlandı olarak işaretle">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!aktif.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="py-16 text-center text-slate-500 dark:text-slate-400">
+                                <i class="fa-regular fa-calendar-xmark text-4xl text-slate-300 dark:text-slate-600 mb-4 block"></i>
+                                Aktif randevu bulunamadı.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div id="panel-tamamlanan" class="hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Tarih &amp; Saat</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Hasta</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Doktor</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Notlar</th>
+                        <th class="py-4 px-6 font-semibold text-sm text-slate-600 dark:text-slate-300">Durum</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    @foreach (var appt in tamamlanan)
+                    {
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors opacity-80 dark:opacity-70">
+                            <td class="py-4 px-6">
+                                <div class="font-medium text-slate-800 dark:text-slate-300">@appt.AppointmentDate.ToString("dd.MM.yyyy")</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">@appt.AppointmentDate.ToString("HH:mm")</div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center font-bold text-xs">
+                                        @(appt.Patient?.FullName?.Length > 2 ? appt.Patient.FullName.Substring(0, 2).ToUpper() : "?")
+                                    </div>
+                                    <span class="font-medium text-slate-600 dark:text-slate-300">@appt.Patient?.FullName</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">@appt.Doctor?.FullName</td>
+                            <td class="py-4 px-6 text-sm text-slate-400 dark:text-slate-500 max-w-[200px] truncate">@(appt.Notes ?? "-")</td>
+                            <td class="py-4 px-6">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                                    <i class="fa-solid fa-check-double"></i> Tamamlandı
+                                </span>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!tamamlanan.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="py-16 text-center text-slate-500 dark:text-slate-400">
+                                <i class="fa-regular fa-calendar-check text-4xl text-slate-300 dark:text-slate-600 mb-4 block"></i>
+                                Henüz tamamlanan randevu yok.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        const panels = ['aktif', 'tamamlanan'];
+        panels.forEach(p => {
+            document.getElementById('panel-' + p).classList.add('hidden');
+            const btn = document.getElementById('tab-' + p);
+            btn.classList.remove('border-primary', 'text-primary');
+            btn.classList.add('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+        });
+
+        document.getElementById('panel-' + tab).classList.remove('hidden');
+        const activeBtn = document.getElementById('tab-' + tab);
+        activeBtn.classList.remove('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+        activeBtn.classList.add('border-primary', 'text-primary');
+    }
+</script>

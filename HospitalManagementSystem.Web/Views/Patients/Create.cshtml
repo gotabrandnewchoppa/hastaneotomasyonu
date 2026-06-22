@@ -1,0 +1,79 @@
+@model HospitalManagementSystem.Web.Models.Patient
+
+@{
+    ViewData["Title"] = "Yeni Hasta Ekle";
+}
+
+<div class="mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+        <a href="/Patients" class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Yeni Hasta Ekle</h1>
+    </div>
+</div>
+
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden p-6 md:p-8 max-w-3xl">
+    <form asp-action="Create" method="post" class="space-y-6">
+        <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label asp-for="FullName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Ad Soyad</label>
+                <input asp-for="FullName" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all" placeholder="Ahmet Yılmaz" />
+                <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="CitizenshipNumber" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">TC Kimlik No</label>
+                <input asp-for="CitizenshipNumber" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all" placeholder="11 Haneli TC Kimlik No" maxlength="11" />
+                <span asp-validation-for="CitizenshipNumber" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Phone" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Telefon Numarası</label>
+                <input asp-for="Phone" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all" placeholder="05XX XXX XX XX" />
+                <span asp-validation-for="Phone" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">E-Posta Adresi (Opsiyonel)</label>
+                <input asp-for="Email" type="email" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all" placeholder="ornek@mail.com" />
+                <span asp-validation-for="Email" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="DateOfBirth" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Doğum Tarihi</label>
+                <input asp-for="DateOfBirth" type="date" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all" />
+                <span asp-validation-for="DateOfBirth" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="Gender" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Cinsiyet</label>
+                <select asp-for="Gender" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all">
+                    <option value="">Seçiniz</option>
+                    <option value="Erkek">Erkek</option>
+                    <option value="Kadın">Kadın</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="Address" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Açık Adres (Opsiyonel)</label>
+            <textarea asp-for="Address" rows="3" class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary/50 text-slate-800 dark:text-slate-200 outline-none transition-all resize-none" placeholder="Mahalle, sokak, no..."></textarea>
+            <span asp-validation-for="Address" class="text-xs text-red-500 mt-1 block"></span>
+        </div>
+
+        <div class="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
+            <a href="/Patients" class="px-6 py-2.5 rounded-lg font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">İptal</a>
+            <button type="submit" class="bg-primary hover:bg-primaryHover text-white px-8 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-check"></i> Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

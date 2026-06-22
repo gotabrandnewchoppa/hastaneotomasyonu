@@ -1,0 +1,116 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap - Hastane Yönetim Sistemi</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        primaryHover: '#2563eb',
+                        surface: '#ffffff',
+                        background: '#f1f5f9',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-4">
+
+    <!-- Login Container -->
+    <div class="w-full max-w-4xl bg-surface rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        
+        <!-- Sol Taraf (Bilgi / Görsel) -->
+        <div class="bg-primary p-12 text-white flex flex-col justify-between hidden md:flex md:w-5/12 relative overflow-hidden">
+            <!-- Arka Plan Dekorasyon -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white opacity-10"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-white opacity-10"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
+                        <i class="fa-solid fa-staff-snake text-2xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight">MediPanel</span>
+                </div>
+                
+                <h2 class="text-3xl font-bold mb-4 leading-tight">Modern Hastane<br />Yönetim Sistemi</h2>
+                <p class="text-blue-100 text-sm leading-relaxed mb-8">
+                    Doktor, Hasta ve Randevu işlemlerinizi tek bir ekrandan kolayca yönetin. Güçlü altyapı ve yenilikçi tasarım.
+                </p>
+            </div>
+            
+            <div class="relative z-10 text-xs text-blue-200">
+                &copy; @DateTime.Now.Year MediPanel Projesi
+            </div>
+        </div>
+
+        <!-- Sağ Taraf (Form) -->
+        <div class="p-8 md:p-12 md:w-7/12 w-full flex flex-col justify-center">
+            
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-slate-800 mb-2">Hoş Geldiniz</h1>
+                <p class="text-slate-500 text-sm">Lütfen yönetici bilgilerinizi girerek sisteme giriş yapın.</p>
+            </div>
+
+            <form asp-controller="Auth" asp-action="Login" method="post" class="space-y-5">
+                @Html.AntiForgeryToken()
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="p-4 bg-red-50 border border-red-100 text-red-700 rounded-lg text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">E-Posta Adresi</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-regular fa-envelope"></i>
+                        </div>
+                        <input type="email" name="email" value="admin@medipanel.com" class="pl-10 w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700" required />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-sm font-medium text-slate-700">Şifre</label>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <input type="password" name="password" value="123456" class="pl-10 w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-slate-700" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-primaryHover text-white font-medium py-2.5 rounded-lg transition-all duration-200 shadow-md shadow-primary/30 mt-4 flex justify-center items-center gap-2 group">
+                    Giriş Yap <i class="fa-solid fa-arrow-right-to-bracket group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+@{
+    ViewData["Title"] = "PID Monitör – IV Sıvı Pompası";
+}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+        <i class="fa-solid fa-heart-pulse text-rose-500"></i>
+        PID Kontrol Monitörü
+    </h1>
+    <p class="text-sm text-slate-500 mt-1">
+        IV sıvı pompası simülasyonu · Hedef kan basıncı: <strong>120 mmHg</strong> · Her 5 saniyede güncellenir
+    </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-slate-500">Ölçülen Kan Basıncı</p>
+            <p id="bp-value" class="text-2xl font-bold text-slate-800">—</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-droplet"></i>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-slate-500">Pompa Akış Hızı</p>
+            <p id="pump-value" class="text-2xl font-bold text-slate-800">—</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-slate-500">Hata (Setpoint – Ölçülen)</p>
+            <p id="error-value" class="text-2xl font-bold text-slate-800">—</p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <h2 class="font-bold text-slate-800">Son 20 PID Kaydı</h2>
+        <span id="status-dot" class="flex items-center gap-1.5 text-xs text-slate-500">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Canlı
+        </span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold text-slate-600">
+                <tr>
+                    <th class="py-3 px-5">Zaman</th>
+                    <th class="py-3 px-5">Ölçülen BP (mmHg)</th>
+                    <th class="py-3 px-5">Hedef (mmHg)</th>
+                    <th class="py-3 px-5">Hata</th>
+                    <th class="py-3 px-5">Pompa (mL/hr)</th>
+                </tr>
+            </thead>
+            <tbody id="pid-table" class="divide-y divide-slate-100 text-slate-700">
+                <tr><td colspan="5" class="py-8 text-center text-slate-400">Yükleniyor…</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function refreshPid() {
+        try {
+            const res = await fetch('/Diagnostics/PidStatus');
+            const data = await res.json();
+
+            if (!data.length) return;
+            const latest = data[0];
+
+            document.getElementById('bp-value').textContent    = latest.measuredBp + ' mmHg';
+            document.getElementById('pump-value').textContent  = latest.pumpRateMlHr + ' mL/hr';
+
+            const err = latest.error;
+            const errEl = document.getElementById('error-value');
+            errEl.textContent = (err >= 0 ? '+' : '') + err + ' mmHg';
+            errEl.className   = 'text-2xl font-bold ' + (Math.abs(err) < 5 ? 'text-emerald-600' : 'text-rose-600');
+
+            const rows = data.slice(0, 20).map(d => {
+                const bpColor = Math.abs(d.error) < 5 ? 'text-emerald-700' : 'text-rose-700';
+                const time = new Date(d.timestamp).toLocaleTimeString('tr-TR');
+                return `<tr class="hover:bg-slate-50">
+                    <td class="py-3 px-5">${time}</td>
+                    <td class="py-3 px-5 font-medium ${bpColor}">${d.measuredBp}</td>
+                    <td class="py-3 px-5">${d.setpoint}</td>
+                    <td class="py-3 px-5">${(d.error >= 0 ? '+' : '') + d.error}</td>
+                    <td class="py-3 px-5">${d.pumpRateMlHr}</td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('pid-table').innerHTML = rows || '<tr><td colspan="5" class="py-8 text-center text-slate-400">Veri yok</td></tr>';
+        } catch(e) {
+            console.error('PID fetch error', e);
+        }
+    }
+
+    refreshPid();
+    setInterval(refreshPid, 5000);
+</script>
